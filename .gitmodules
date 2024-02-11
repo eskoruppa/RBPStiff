@@ -1,0 +1,3 @@
+[submodule "SO3"]
+	path = SO3
+	url = git@github.com:eskoruppa/SO3
