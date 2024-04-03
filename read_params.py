@@ -68,21 +68,13 @@ class GenStiffness:
         return stiff, gs
 
 
-if __name__ == "__main__":
-    np.set_printoptions(linewidth=250, precision=3, suppress=True)
-    method = sys.argv[1].upper()
-    genstiff = GenStiffness(method=method)
+# if __name__ == "__main__":
+#     np.set_printoptions(linewidth=250, precision=3, suppress=True)
+#     method = sys.argv[1].upper()
+#     genstiff = GenStiffness(method=method)
 
-    seq = "ATCG"
+#     seq = "ATCG"
 
-    genstiff.gen_params(seq, use_group=True)
+#     genstiff.gen_params(seq, use_group=True)
 
-    triadfn = os.path.join(os.path.dirname(__file__), "State/Nucleosome.state")
-    nuctriads = read_nucleosome_triads(triadfn)
-    N = len(nuctriads)
-
-    for i in range(N - 1):
-        g = np.linalg.inv(nuctriads[i]) @ nuctriads[i + 1]
-        X = so3.se3_rotmat2euler(g)
-        X[:3] *= 180 / np.pi
-        print(X)
+ 
