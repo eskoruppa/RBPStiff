@@ -4,7 +4,7 @@ import sys
 from typing import Any, Callable, Dict, List, Tuple
 
 import numpy as np
-
+from scipy.sparse import lil_matrix
 from .SO3 import so3
 
 
@@ -50,9 +50,12 @@ class GenStiffness:
         }
         return dimer
 
-    def gen_params(self, seq: str, use_group: str = False):
+    def gen_params(self, seq: str, use_group: bool = False, sparse: bool = True):
         N = len(seq) - 1
-        stiff = np.zeros((6 * N, 6 * N))
+        if sparse:
+            stiff = lil_matrix(self.shape)
+        else:
+            stiff = np.zeros((6 * N, 6 * N))
         gs = np.zeros((N, 6))
         for i in range(N):
             bp = seq[i : i + 2].upper()
@@ -65,16 +68,7 @@ class GenStiffness:
 
             stiff[6 * i : 6 * i + 6, 6 * i : 6 * i + 6] = pstiff
             gs[i] = pgs
+        
+        if sparse:
+            stiff = stiff.tocsc()
         return stiff, gs
-
-
-# if __name__ == "__main__":
-#     np.set_printoptions(linewidth=250, precision=3, suppress=True)
-#     method = sys.argv[1].upper()
-#     genstiff = GenStiffness(method=method)
-
-#     seq = "ATCG"
-
-#     genstiff.gen_params(seq, use_group=True)
-
- 
