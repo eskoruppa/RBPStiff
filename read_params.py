@@ -53,7 +53,7 @@ class GenStiffness:
     def gen_params(self, seq: str, use_group: bool = False, sparse: bool = True):
         N = len(seq) - 1
         if sparse:
-            stiff = lil_matrix(self.shape)
+            stiff = lil_matrix((6 * N, 6 * N))
         else:
             stiff = np.zeros((6 * N, 6 * N))
         gs = np.zeros((N, 6))
@@ -71,4 +71,4 @@ class GenStiffness:
         
         if sparse:
             stiff = stiff.tocsc()
-        return stiff, gs
+        return stiff,gs
