@@ -63,8 +63,8 @@ class GenStiffness:
                 pstiff = self.dimers[bp]["group_stiff"]
                 pgs = self.dimers[bp]["group_gs"]
             else:
-                pstiff = self.dimers[bp]["equi"]
-                pgs = self.dimers[bp]["stiff"]
+                pstiff = self.dimers[bp]["stiff"]
+                pgs = self.dimers[bp]["equi"]
 
             stiff[6 * i : 6 * i + 6, 6 * i : 6 * i + 6] = pstiff
             gs[i] = pgs
