@@ -9,31 +9,71 @@ from .SO3 import so3
 
 
 class GenStiffness:
-    def __init__(self, method: str = "md"):
-        self.method = method
+    def __init__(self, method: str = "md", stiff_method: str = None, gs_method: str = None):
+        self.method         = method
+        self.stiff_method   = stiff_method
+        self.gs_method      = gs_method
         self.load_from_file()
 
     def load_from_file(self):
         if self.method.lower() == "md":
-            path = os.path.join(
+            stiff_path = os.path.join(
+                os.path.dirname(__file__), "Parametrization/MolecularDynamics"
+            )
+            gs_path = os.path.join(
                 os.path.dirname(__file__), "Parametrization/MolecularDynamics"
             )
         elif "crystal" in self.method.lower():
-            path = os.path.join(
+            stiff_path = os.path.join(
+                os.path.dirname(__file__), "Parametrization/Crystallography"
+            )
+            gs_path = os.path.join(
+                os.path.dirname(__file__), "Parametrization/Crystallography"
+            )
+        elif "hybrid" in self.method.lower():
+            stiff_path = os.path.join(
+                os.path.dirname(__file__), "Parametrization/MolecularDynamics"
+            )
+            gs_path = os.path.join(
                 os.path.dirname(__file__), "Parametrization/Crystallography"
             )
         else:
             raise ValueError(f'Unknown method "{self.method}".')
+        
+        if self.stiff_method is not None:
+            if self.stiff_method.lower() == 'md':
+                stiff_path = os.path.join(
+                    os.path.dirname(__file__), "Parametrization/MolecularDynamics"
+                )
+            elif self.stiff_method.lower() == 'crystal':
+                stiff_path = os.path.join(
+                    os.path.dirname(__file__), "Parametrization/Crystallography"
+                )
+            else:
+                raise ValueError(f'Unknown stiff_method "{self.stiff_method}".')
+            
+        if self.gs_method is not None:
+            if self.gs_method.lower() == 'md':
+                gs_path = os.path.join(
+                    os.path.dirname(__file__), "Parametrization/MolecularDynamics"
+                )
+            elif self.gs_method.lower() == 'crystal':
+                gs_path = os.path.join(
+                    os.path.dirname(__file__), "Parametrization/Crystallography"
+                )
+            else:
+                raise ValueError(f'Unknown gs_method "{self.gs_method}".')
+        
         bases = "ATCG"
         self.dimers = {}
         for b1 in bases:
             for b2 in bases:
                 seq = b1 + b2
-                self.dimers[seq] = self.read_dimer(seq, path)
+                self.dimers[seq] = self.read_dimer(seq, stiff_path, gs_path)
 
-    def read_dimer(self, seq: str, path: str):
-        fnstiff = glob.glob(path + "/Stiffness*" + seq + "*")[0]
-        fnequi = glob.glob(path + "/Equilibrium*" + seq + "*")[0]
+    def read_dimer(self, seq: str, stiff_path: str, gs_path: str):
+        fnstiff = glob.glob(stiff_path + "/Stiffness*" + seq + "*")[0]
+        fnequi = glob.glob(gs_path + "/Equilibrium*" + seq + "*")[0]
 
         equi = np.loadtxt(fnequi)
         stiff = np.loadtxt(fnstiff)
