@@ -4,7 +4,7 @@ import sys
 from typing import Any, Callable, Dict, List, Tuple
 
 import numpy as np
-from scipy.sparse import lil_matrix
+import scipy as sp
 from .SO3 import so3
 
 
@@ -90,13 +90,10 @@ class GenStiffness:
         }
         return dimer
 
-    def gen_params(self, seq: str, use_group: bool = False, sparse: bool = True):
+    def gen_params(self, seq: str, use_group: bool = False, sparse: bool = False):
         N = len(seq) - 1
-        if sparse:
-            stiff = lil_matrix((6 * N, 6 * N))
-        else:
-            stiff = np.zeros((6 * N, 6 * N))
         gs = np.zeros((N, 6))
+        blocks = []
         for i in range(N):
             bp = seq[i : i + 2].upper()
             if use_group:
@@ -105,10 +102,49 @@ class GenStiffness:
             else:
                 pstiff = self.dimers[bp]["stiff"]
                 pgs = self.dimers[bp]["equi"]
-
-            stiff[6 * i : 6 * i + 6, 6 * i : 6 * i + 6] = pstiff
+            blocks.append(pstiff)
             gs[i] = pgs
         
         if sparse:
-            stiff = stiff.tocsc()
+            stiff = sp.sparse.block_diag(blocks, format='csr')
+        else:
+            stiff = np.zeros((6 * N, 6 * N))
+            for i,block in enumerate(blocks):
+                stiff[6 * i : 6 * i + 6, 6 * i : 6 * i + 6] = block
         return stiff,gs
+                
+    # def _gen_params_old(self, seq: str, use_group: bool = False, sparse: bool = True):
+    #     N = len(seq) - 1
+    #     if sparse:
+    #         stiff = sp.sparse.lil_matrix((6 * N, 6 * N))
+    #     else:
+    #         stiff = np.zeros((6 * N, 6 * N))
+    #     gs = np.zeros((N, 6))
+    #     for i in range(N):
+    #         bp = seq[i : i + 2].upper()
+    #         if use_group:
+    #             pstiff = self.dimers[bp]["group_stiff"]
+    #             pgs = self.dimers[bp]["group_gs"]
+    #         else:
+    #             pstiff = self.dimers[bp]["stiff"]
+    #             pgs = self.dimers[bp]["equi"]
+
+    #         stiff[6 * i : 6 * i + 6, 6 * i : 6 * i + 6] = pstiff
+    #         gs[i] = pgs
+        
+    #     if sparse:
+    #         stiff = stiff.tocsc()
+    #     return stiff,gs
+    
+    
+    
+# if __name__ == '__main__':
+    
+#     seq = 'ATCGAGCTATCGAT'
+    
+#     genstiff = GenStiffness(method='md')
+    
+#     M1,gs1 = genstiff.gen_params(seq,use_group=True,sparse=True)
+#     M2,gs2 = genstiff.gen_params_old(seq,use_group=True)
+    
+#     print(np.sum(M1.toarray()-M2))
