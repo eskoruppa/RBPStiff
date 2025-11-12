@@ -111,7 +111,7 @@ class GenStiffness:
             stiff = np.zeros((6 * N, 6 * N))
             for i,block in enumerate(blocks):
                 stiff[6 * i : 6 * i + 6, 6 * i : 6 * i + 6] = block
-        return {'stiff':stiff, 'groundstate':gs}
+        return {'stiffness':stiff, 'groundstate':gs}
                 
     # def _gen_params_old(self, seq: str, use_group: bool = False, sparse: bool = True):
     #     N = len(seq) - 1
