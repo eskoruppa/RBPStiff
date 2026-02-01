@@ -1,5 +1,5 @@
 import numpy as np
-import sys, os
+import sys
 
 from .read_params import GenStiffness
 from .SO3 import so3
@@ -9,7 +9,8 @@ class Groundstate:
         self.genstiff = GenStiffness(method=method)
         
     def gen(self,seq: str):
-        stiff, gs = self.genstiff.gen_params(seq,use_group=True)
+        params = self.genstiff.gen_params(seq,use_group=True)
+        gs = params['groundstate']
         conf = np.zeros((len(seq),4,4))
         conf[0] = np.eye(4)
         for i in range(len(seq)-1):

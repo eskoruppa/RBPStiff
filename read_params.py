@@ -1,7 +1,7 @@
+from __future__ import annotations
+
 import glob
 import os
-import sys
-from typing import Any, Callable, Dict, List, Tuple
 
 import numpy as np
 import scipy as sp
@@ -9,7 +9,12 @@ from .SO3 import so3
 
 
 class GenStiffness:
-    def __init__(self, method: str = "md", stiff_method: str = None, gs_method: str = None):
+    def __init__(
+        self, 
+        method: str = "md", 
+        stiff_method: str | None = None, 
+        gs_method: str | None = None
+    ):
         self.method         = method
         self.stiff_method   = stiff_method
         self.gs_method      = gs_method
