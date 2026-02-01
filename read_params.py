@@ -95,7 +95,7 @@ class GenStiffness:
         }
         return dimer
 
-    def gen_params(self, seq: str, use_group: bool = False, sparse: bool = False):
+    def gen_params(self, seq: str, use_group: bool = False, sparse: bool = False) -> dict[str, np.ndarray]:
         N = len(seq) - 1
         gs = np.zeros((N, 6))
         blocks = []
@@ -118,38 +118,3 @@ class GenStiffness:
                 stiff[6 * i : 6 * i + 6, 6 * i : 6 * i + 6] = block
         return {'stiffness':stiff, 'groundstate':gs}
                 
-    # def _gen_params_old(self, seq: str, use_group: bool = False, sparse: bool = True):
-    #     N = len(seq) - 1
-    #     if sparse:
-    #         stiff = sp.sparse.lil_matrix((6 * N, 6 * N))
-    #     else:
-    #         stiff = np.zeros((6 * N, 6 * N))
-    #     gs = np.zeros((N, 6))
-    #     for i in range(N):
-    #         bp = seq[i : i + 2].upper()
-    #         if use_group:
-    #             pstiff = self.dimers[bp]["group_stiff"]
-    #             pgs = self.dimers[bp]["group_gs"]
-    #         else:
-    #             pstiff = self.dimers[bp]["stiff"]
-    #             pgs = self.dimers[bp]["equi"]
-
-    #         stiff[6 * i : 6 * i + 6, 6 * i : 6 * i + 6] = pstiff
-    #         gs[i] = pgs
-        
-    #     if sparse:
-    #         stiff = stiff.tocsc()
-    #     return stiff,gs
-    
-    
-    
-# if __name__ == '__main__':
-    
-#     seq = 'ATCGAGCTATCGAT'
-    
-#     genstiff = GenStiffness(method='md')
-    
-#     M1,gs1 = genstiff.gen_params(seq,use_group=True,sparse=True)
-#     M2,gs2 = genstiff.gen_params_old(seq,use_group=True)
-    
-#     print(np.sum(M1.toarray()-M2))
